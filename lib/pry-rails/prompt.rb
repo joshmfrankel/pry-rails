@@ -19,6 +19,12 @@ module PryRails
           Rails.application.class.parent_name.underscore
         end
       end
+
+      def sandbox_mode
+        return "" unless Rails.application.sandbox?
+
+        "[#{Pry::Helpers::Text.yellow('sandbox: true')}]"
+      end
     end
   end
 
@@ -27,14 +33,14 @@ module PryRails
   if Pry::Prompt.respond_to?(:add)
     Pry::Prompt.add 'rails', desc, %w(> *) do |target_self, nest_level, pry, sep|
       "[#{pry.input_ring.size}] " \
-      "[#{Prompt.project_name}][#{Prompt.formatted_env}] " \
+      "[#{Prompt.project_name}][#{Prompt.formatted_env}]#{Prompt.sandbox_mode} " \
       "#{pry.config.prompt_name}(#{Pry.view_clip(target_self)})" \
       "#{":#{nest_level}" unless nest_level.zero?}#{sep} "
     end
   else
     draw_prompt = lambda do |target_self, nest_level, pry, sep|
       "[#{pry.input_array.size}] " \
-      "[#{Prompt.project_name}][#{Prompt.formatted_env}] " \
+      "[#{Prompt.project_name}][#{Prompt.formatted_env}]#{Prompt.sandbox_mode} " \
       "#{pry.config.prompt_name}(#{Pry.view_clip(target_self)})" \
       "#{":#{nest_level}" unless nest_level.zero?}#{sep} "
     end
